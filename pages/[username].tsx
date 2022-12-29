@@ -85,7 +85,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     let userData;
 
     if (typeof username === "string") {
-        userData = (await axios.get(`https://chainlink.restapi.ca:5000/api/users/${username.toLowerCase()}`)).data
+        userData = (await axios.get(`https://chainlink.restapi.ca/api/users/${username.toLowerCase()}`)).data
     }
 
     return {

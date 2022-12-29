@@ -68,7 +68,7 @@ const LoginPanel = (props: props) => {
         }
 
         try {
-            const postRes = await axios.post("https://chainlink.restapi.ca:5000/api/login", {
+            const postRes = await axios.post("https://chainlink.restapi.ca/api/login", {
                 username,
                 password
             }, {
@@ -109,7 +109,7 @@ const LoginPanel = (props: props) => {
         }
 
         try {
-            const postRes = await axios.post("https://chainlink.restapi.ca:5000/api/users", {
+            const postRes = await axios.post("https://chainlink.restapi.ca/api/users", {
                 username,
                 password
             }, {

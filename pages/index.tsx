@@ -64,7 +64,7 @@ export default function Home() {
   React.useEffect(() => {
     const validate = async () => {
       try {
-        const validateRes = await axios.get("https://chainlink.restapi.ca:5000/api/validate", {
+        const validateRes = await axios.get("https://chainlink.restapi.ca/api/validate", {
           withCredentials: true
         })
         setIsAuthenticating(false)
