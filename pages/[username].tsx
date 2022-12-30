@@ -13,6 +13,7 @@ export default function UserPage({ userData }: InferGetServerSidePropsType<typeo
 
     const fetchData = async (username: string | string[] | undefined) => {
         if (typeof username === "string") {
+            // use a environment variable for something like this
             return (await axios.get(`https://chainlink.restapi.ca:5000/api/users/${username.toLowerCase()}`)).data
         }
     }
