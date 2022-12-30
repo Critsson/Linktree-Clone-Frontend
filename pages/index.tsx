@@ -64,6 +64,7 @@ export default function Home() {
   React.useEffect(() => {
     const validate = async () => {
       try {
+        // it might not be necessary to validate every page render. you could wait until you make a call to your backend and it 401s to send the user back. this just needs to run the very first time the page loads
         const validateRes = await axios.get("https://chainlink.restapi.ca/api/validate", {
           withCredentials: true
         })

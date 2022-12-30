@@ -12,6 +12,7 @@ const AdminPage = () => {
 
     const validate = async () => {
       try {
+        // you might be calling this in a few places. it might be good to create an api class that can handle calling the validate method more easily than using axios every time. ideally none of your components need to know aout having to use axios or the url that it sends to
         const validateRes = await axios.get("https://chainlink.restapi.ca/api/validate", {
           withCredentials: true
         })

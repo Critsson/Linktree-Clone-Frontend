@@ -25,6 +25,7 @@ const LoginPanel = (props: props) => {
     const [confirmPassword, setConfirmPassword] = React.useState("")
     const [isIncorrect, setIsIncorrect] = React.useState(false)
     const windowSize = useWindowSize()
+    // look into using some css in js modules to help manage styles. i've used emotionjs
     const loginPanelContainerMobile = {
         backgroundColor: "#ffffff",
         width: "90vw",
