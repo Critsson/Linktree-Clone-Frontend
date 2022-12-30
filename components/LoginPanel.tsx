@@ -1,7 +1,7 @@
 import React from 'react'
 import useWindowSize from '../useWindowSize'
 import styles from "../styles/Extras.module.css"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { useRouter } from "next/router"
 import { CircularProgress } from '@mui/material'
 import axios from 'axios'
@@ -22,6 +22,7 @@ const LoginPanel = (props: props) => {
     const [isChecking, setIsChecking] = React.useState(false)
     const [username, setUsername] = React.useState("")
     const [password, setPassword] = React.useState("")
+    const [confirmPassword, setConfirmPassword] = React.useState("")
     const [isIncorrect, setIsIncorrect] = React.useState(false)
     const windowSize = useWindowSize()
     const loginPanelContainerMobile = {
@@ -75,7 +76,6 @@ const LoginPanel = (props: props) => {
                 withCredentials: true,
             })
             setIsChecking(false)
-            console.log(document.cookie)
             console.log(postRes)
             router.push("/admin")
         } catch (error) {
@@ -105,6 +105,11 @@ const LoginPanel = (props: props) => {
             setIsChecking(false)
             setIsIncorrect(true)
             props.handleSignInAlert("Invalid password")
+            return
+        } else if (password !== confirmPassword) {
+            setIsChecking(false)
+            setIsIncorrect(true)
+            props.handleSignInAlert("Passwords do not match")
             return
         }
 
@@ -146,16 +151,12 @@ const LoginPanel = (props: props) => {
 
     const checkPasswordChange = (value: string) => {
 
-        const regEx = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{1,}$/
+        const regEx = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&$])[A-Za-z\d@$!%*#?&$]{8,50}$/
 
         if (!regEx.test(value)) {
             props.handlePasswordValidity(true)
         } else {
-            if (value.length > 7 && value.length < 51) {
-                props.handlePasswordValidity(false)
-            } else {
-                props.handlePasswordValidity(true)
-            }
+            props.handlePasswordValidity(false)
         }
 
         setPassword(value)
@@ -164,6 +165,7 @@ const LoginPanel = (props: props) => {
     const handleLoginModeChange = (goingToLoginMode: boolean) => {
         setUsername("")
         setPassword("")
+        setConfirmPassword("")
         if (goingToLoginMode) {
             props.handleInSignup(false)
             setInLoginMode(true)
@@ -175,61 +177,10 @@ const LoginPanel = (props: props) => {
 
     return (
         <motion.div animate={isIncorrect ? { translateX: [6, -12, 12, -12, 6] } : {}} transition={{ duration: .4 }} onAnimationComplete={() => setIsIncorrect(false)}>
-            {inLoginMode ? <div style={windowSize.width > 640 ? loginPanelContainerDesktop : loginPanelContainerMobile}>
-                <div style={windowSize.width > 640 ? { display: "flex", marginBottom: "2vw" } : { display: "flex", marginBottom: "5vw" }}>
-                    <button className={styles.hover_cursor} style={windowSize.width > 640 ? {
-                        width: "50%", height: "100%", backgroundColor: inLoginMode ? "#7895B2" : "white", borderWidth: "0vw", fontSize: "1.9vw", fontWeight: "700",
-                        color: inLoginMode ? "white" : "#202430", paddingTop: ".8vw", paddingBottom: ".8vw", borderTopLeftRadius: "1vw", outline: ".3vw #202430 solid"
-                    }
-                        : {
-                            width: "50%", height: "100%", backgroundColor: inLoginMode ? "#7895B2" : "white", borderWidth: "0vw", fontSize: "5vw", fontWeight: "700",
-                            color: inLoginMode ? "white" : "#202430", paddingTop: "2vw", paddingBottom: "2vw", borderTopLeftRadius: "1vw", outline: "1vw #202430 solid"
-                        }}>Login</button>
-                    <button onClick={() => handleLoginModeChange(false)} className={styles.hover_cursor} style={windowSize.width > 640 ? {
-                        width: "50%", height: "100%", backgroundColor: !inLoginMode ? "#7895B2" : "white", borderWidth: "0vw", fontSize: "1.9vw", fontWeight: "700",
-                        color: !inLoginMode ? "white" : "#202430", paddingTop: ".8vw", paddingBottom: ".8vw", borderTopRightRadius: "1vw", outline: ".3vw #202430 solid"
-                    }
-                        : {
-                            width: "50%", height: "100%", backgroundColor: !inLoginMode ? "#7895B2" : "white", borderWidth: "0vw", fontSize: "5vw", fontWeight: "700",
-                            color: !inLoginMode ? "white" : "#202430", paddingTop: "2vw", paddingBottom: "2vw", borderTopRightRadius: "1vw", outline: "1vw #202430 solid"
-                        }}>Sign Up</button>
-                </div>
-                <form onSubmit={(e) => handleSubmit(e)} style={windowSize.width > 640 ? { display: "flex", flexDirection: "column", alignItems: "center", gap: "2.6vw" } : { display: "flex", flexDirection: "column", alignItems: "center", gap: "5vw" }}>
-                    <input onChange={(e) => setUsername((e.target.value))} value={username} style={windowSize.width > 640 ? {
-                        width: "30vw", height: "4vw", fontFamily: "Inter, sans-serif", fontSize: "1.8vw", boxShadow: ".4vw .4vw 0 0vw #202430", border: ".3vw #202430 solid", borderRadius: ".5vw",
-                        paddingLeft: ".8vw", fontWeight: "500", outlineWidth: "0vw", color: "#202430"
-                    }
-                        :
-                        {
-                            width: "70vw", height: "10vw", fontFamily: "Inter, sans-serif", fontSize: "5vw", boxShadow: "1.1vw 1.1vw 0 0vw #202430", border: "1vw #202430 solid", borderRadius: "2vw",
-                            paddingLeft: "1vw", fontWeight: "500", outlineWidth: "0vw", color: "#202430"
-                        }} placeholder='Username'></input>
-                    <input onChange={(e) => setPassword(e.target.value)} type="password" value={password} style={windowSize.width > 640 ? {
-                        width: "30vw", height: "4vw", fontFamily: "Inter, sans-serif", fontSize: "1.8vw", boxShadow: ".4vw .4vw 0 0vw #202430", border: ".3vw #202430 solid", borderRadius: ".5vw",
-                        paddingLeft: ".8vw", fontWeight: "500", outlineWidth: "0vw", color: "#202430"
-                    }
-                        :
-                        {
-                            width: "70vw", height: "10vw", fontFamily: "Inter, sans-serif", fontSize: "5vw", boxShadow: "1.1vw 1.1vw 0 0vw #202430", border: "1vw #202430 solid", borderRadius: "2vw",
-                            paddingLeft: "1vw", fontWeight: "500", outlineWidth: "0vw", color: "#202430"
-                        }} placeholder='Password'></input>
-                    {!isChecking ? <motion.button whileTap={{ scale: 0.9 }} type="submit" className={styles.hover_cursor} style={windowSize.width > 640 ? {
-                        height: "4vw", width: "13vw", fontFamily: "Inter, sans-serif", backgroundColor: "#7895B2", border: ".3vw #202430 solid ",
-                        borderRadius: ".5vw", fontSize: "2vw", fontWeight: "700", color: "white", boxShadow: ".3vw .3vw 0 0vw #202430"
-                    }
-                        :
-                        {
-                            height: "10vw", width: "40vw", fontFamily: "Inter, sans-serif", backgroundColor: "#7895B2", border: "1vw #202430 solid ",
-                            borderRadius: "2vw", fontSize: "5.5vw", fontWeight: "700", color: "white", boxShadow: "1.1vw 1.1vw 0 0vw #202430"
-                        }}>Login</motion.button> : <div style={windowSize.width > 640 ? { height: "4vw", width: "13vw", display: "flex", justifyContent: "center", alignItems: "center" }
-                            :
-                            { height: "10vw", width: "40vw", display: "flex", justifyContent: "center", alignItems: "center" }}><CircularProgress sx={{ color: "#202430" }} /></div>}
-                </form>
-            </div>
-                :
-                <div style={windowSize.width > 640 ? loginPanelContainerDesktop : loginPanelContainerMobile}>
+            <div style={windowSize.width > 640 ? loginPanelContainerDesktop : loginPanelContainerMobile}>
+                {inLoginMode ? <div>
                     <div style={windowSize.width > 640 ? { display: "flex", marginBottom: "2vw" } : { display: "flex", marginBottom: "5vw" }}>
-                        <button onClick={() => handleLoginModeChange(true)} className={styles.hover_cursor} style={windowSize.width > 640 ? {
+                        <button className={styles.hover_cursor} style={windowSize.width > 640 ? {
                             width: "50%", height: "100%", backgroundColor: inLoginMode ? "#7895B2" : "white", borderWidth: "0vw", fontSize: "1.9vw", fontWeight: "700",
                             color: inLoginMode ? "white" : "#202430", paddingTop: ".8vw", paddingBottom: ".8vw", borderTopLeftRadius: "1vw", outline: ".3vw #202430 solid"
                         }
@@ -237,7 +188,7 @@ const LoginPanel = (props: props) => {
                                 width: "50%", height: "100%", backgroundColor: inLoginMode ? "#7895B2" : "white", borderWidth: "0vw", fontSize: "5vw", fontWeight: "700",
                                 color: inLoginMode ? "white" : "#202430", paddingTop: "2vw", paddingBottom: "2vw", borderTopLeftRadius: "1vw", outline: "1vw #202430 solid"
                             }}>Login</button>
-                        <button className={styles.hover_cursor} style={windowSize.width > 640 ? {
+                        <button onClick={() => handleLoginModeChange(false)} className={styles.hover_cursor} style={windowSize.width > 640 ? {
                             width: "50%", height: "100%", backgroundColor: !inLoginMode ? "#7895B2" : "white", borderWidth: "0vw", fontSize: "1.9vw", fontWeight: "700",
                             color: !inLoginMode ? "white" : "#202430", paddingTop: ".8vw", paddingBottom: ".8vw", borderTopRightRadius: "1vw", outline: ".3vw #202430 solid"
                         }
@@ -246,23 +197,23 @@ const LoginPanel = (props: props) => {
                                 color: !inLoginMode ? "white" : "#202430", paddingTop: "2vw", paddingBottom: "2vw", borderTopRightRadius: "1vw", outline: "1vw #202430 solid"
                             }}>Sign Up</button>
                     </div>
-                    <form onSubmit={(e) => handleSignUp(e)} style={windowSize.width > 640 ? { display: "flex", flexDirection: "column", alignItems: "center", gap: "2.6vw" } : { display: "flex", flexDirection: "column", alignItems: "center", gap: "5vw" }}>
-                        <input onChange={(e) => checkUsernameChange(e.target.value)} value={username} style={windowSize.width > 640 ? {
-                            width: "30vw", height: "4vw", fontFamily: "Inter, sans-serif", fontSize: "1.8vw", boxShadow: ".4vw .4vw 0 0vw #202430", border: ".3vw #202430 solid", borderRadius: ".5vw",
+                    <form onSubmit={(e) => handleSubmit(e)} style={windowSize.width > 640 ? { display: "flex", flexDirection: "column", alignItems: "center", gap: "2.6vw" } : { display: "flex", flexDirection: "column", alignItems: "center", gap: "5vw" }}>
+                        <input onChange={(e) => setUsername((e.target.value))} value={username} style={windowSize.width > 640 ? {
+                            width: "34vw", height: "4vw", fontFamily: "Inter, sans-serif", fontSize: "1.65vw", boxShadow: ".4vw .4vw 0 0vw #202430", border: ".3vw #202430 solid", borderRadius: ".5vw",
                             paddingLeft: ".8vw", fontWeight: "500", outlineWidth: "0vw", color: "#202430"
                         }
                             :
                             {
-                                width: "70vw", height: "10vw", fontFamily: "Inter, sans-serif", fontSize: "5vw", boxShadow: "1.1vw 1.1vw 0 0vw #202430", border: "1vw #202430 solid", borderRadius: "2vw",
+                                width: "70vw", height: "10vw", fontFamily: "Inter, sans-serif", fontSize: "3.7vw", boxShadow: "1.1vw 1.1vw 0 0vw #202430", border: "1vw #202430 solid", borderRadius: "2vw",
                                 paddingLeft: "1vw", fontWeight: "500", outlineWidth: "0vw", color: "#202430"
                             }} placeholder='Username'></input>
-                        <input onChange={(e) => checkPasswordChange(e.target.value)} type="password" value={password} style={windowSize.width > 640 ? {
-                            width: "30vw", height: "4vw", fontFamily: "Inter, sans-serif", fontSize: "1.8vw", boxShadow: ".4vw .4vw 0 0vw #202430", border: ".3vw #202430 solid", borderRadius: ".5vw",
+                        <input onChange={(e) => setPassword(e.target.value)} type="password" value={password} style={windowSize.width > 640 ? {
+                            width: "34vw", height: "4vw", fontFamily: "Inter, sans-serif", fontSize: "1.65vw", boxShadow: ".4vw .4vw 0 0vw #202430", border: ".3vw #202430 solid", borderRadius: ".5vw",
                             paddingLeft: ".8vw", fontWeight: "500", outlineWidth: "0vw", color: "#202430"
                         }
                             :
                             {
-                                width: "70vw", height: "10vw", fontFamily: "Inter, sans-serif", fontSize: "5vw", boxShadow: "1.1vw 1.1vw 0 0vw #202430", border: "1vw #202430 solid", borderRadius: "2vw",
+                                width: "70vw", height: "10vw", fontFamily: "Inter, sans-serif", fontSize: "3.7vw", boxShadow: "1.1vw 1.1vw 0 0vw #202430", border: "1vw #202430 solid", borderRadius: "2vw",
                                 paddingLeft: "1vw", fontWeight: "500", outlineWidth: "0vw", color: "#202430"
                             }} placeholder='Password'></input>
                         {!isChecking ? <motion.button whileTap={{ scale: 0.9 }} type="submit" className={styles.hover_cursor} style={windowSize.width > 640 ? {
@@ -273,11 +224,76 @@ const LoginPanel = (props: props) => {
                             {
                                 height: "10vw", width: "40vw", fontFamily: "Inter, sans-serif", backgroundColor: "#7895B2", border: "1vw #202430 solid ",
                                 borderRadius: "2vw", fontSize: "5.5vw", fontWeight: "700", color: "white", boxShadow: "1.1vw 1.1vw 0 0vw #202430"
-                            }}>Sign Up</motion.button> : <div style={windowSize.width > 640 ? { height: "4vw", width: "13vw", display: "flex", justifyContent: "center", alignItems: "center" }
+                            }}>Login</motion.button> : <div style={windowSize.width > 640 ? { height: "4vw", width: "13vw", display: "flex", justifyContent: "center", alignItems: "center" }
                                 :
                                 { height: "10vw", width: "40vw", display: "flex", justifyContent: "center", alignItems: "center" }}><CircularProgress sx={{ color: "#202430" }} /></div>}
                     </form>
-                </div>}
+                </div>
+                    :
+                    <div>
+                        <div style={windowSize.width > 640 ? { display: "flex", marginBottom: "2vw" } : { display: "flex", marginBottom: "5vw" }}>
+                            <button onClick={() => handleLoginModeChange(true)} className={styles.hover_cursor} style={windowSize.width > 640 ? {
+                                width: "50%", height: "100%", backgroundColor: inLoginMode ? "#7895B2" : "white", borderWidth: "0vw", fontSize: "1.9vw", fontWeight: "700",
+                                color: inLoginMode ? "white" : "#202430", paddingTop: ".8vw", paddingBottom: ".8vw", borderTopLeftRadius: "1vw", outline: ".3vw #202430 solid"
+                            }
+                                : {
+                                    width: "50%", height: "100%", backgroundColor: inLoginMode ? "#7895B2" : "white", borderWidth: "0vw", fontSize: "5vw", fontWeight: "700",
+                                    color: inLoginMode ? "white" : "#202430", paddingTop: "2vw", paddingBottom: "2vw", borderTopLeftRadius: "1vw", outline: "1vw #202430 solid"
+                                }}>Login</button>
+                            <button className={styles.hover_cursor} style={windowSize.width > 640 ? {
+                                width: "50%", height: "100%", backgroundColor: !inLoginMode ? "#7895B2" : "white", borderWidth: "0vw", fontSize: "1.9vw", fontWeight: "700",
+                                color: !inLoginMode ? "white" : "#202430", paddingTop: ".8vw", paddingBottom: ".8vw", borderTopRightRadius: "1vw", outline: ".3vw #202430 solid"
+                            }
+                                : {
+                                    width: "50%", height: "100%", backgroundColor: !inLoginMode ? "#7895B2" : "white", borderWidth: "0vw", fontSize: "5vw", fontWeight: "700",
+                                    color: !inLoginMode ? "white" : "#202430", paddingTop: "2vw", paddingBottom: "2vw", borderTopRightRadius: "1vw", outline: "1vw #202430 solid"
+                                }}>Sign Up</button>
+                        </div>
+                        <form onSubmit={(e) => handleSignUp(e)} style={windowSize.width > 640 ? { display: "flex", flexDirection: "column", alignItems: "center", gap: "2.6vw" } : { display: "flex", flexDirection: "column", alignItems: "center", gap: "5vw" }}>
+                            <input onChange={(e) => checkUsernameChange(e.target.value)} value={username} style={windowSize.width > 640 ? {
+                                width: "34vw", height: "4vw", fontFamily: "Inter, sans-serif", fontSize: "1.65vw", boxShadow: ".4vw .4vw 0 0vw #202430", border: ".3vw #202430 solid", borderRadius: ".5vw",
+                                paddingLeft: ".8vw", fontWeight: "500", outlineWidth: "0vw", color: "#202430"
+                            }
+                                :
+                                {
+                                    width: "70vw", height: "10vw", fontFamily: "Inter, sans-serif", fontSize: "3.7vw", boxShadow: "1.1vw 1.1vw 0 0vw #202430", border: "1vw #202430 solid", borderRadius: "2vw",
+                                    paddingLeft: "1vw", fontWeight: "500", outlineWidth: "0vw", color: "#202430"
+                                }} placeholder='Username'></input>
+                            <div style={windowSize.width > 640 ? { width: "34vw", display: "flex", gap: ".8vw" } : { width: "70vw", display: "flex", gap: "1.5vw" }}>
+                                <motion.input key="password" initial={{ x: ".7vw" }} animate={{ x: 0 }} onChange={(e) => checkPasswordChange(e.target.value)} type="password" value={password} style={windowSize.width > 640 ? {
+                                    width: "50%", height: "4vw", fontFamily: "Inter, sans-serif", fontSize: "1.65vw", boxShadow: ".4vw .4vw 0 0vw #202430", border: ".3vw #202430 solid", borderRadius: ".5vw",
+                                    paddingLeft: ".8vw", fontWeight: "500", outlineWidth: "0vw", color: "#202430"
+                                }
+                                    :
+                                    {
+                                        width: "50%", height: "10vw", fontFamily: "Inter, sans-serif", fontSize: "3.7vw", boxShadow: "1.1vw 1.1vw 0 0vw #202430", border: "1vw #202430 solid", borderRadius: "2vw",
+                                        paddingLeft: "1vw", fontWeight: "500", outlineWidth: "0vw", color: "#202430"
+                                    }} placeholder='Password'></motion.input>
+                                <motion.input key="checkPassword" initial={{ x: "-.7vw" }} animate={{ x: 0 }} onChange={(e) => setConfirmPassword(e.target.value)} type="password" value={confirmPassword} style={windowSize.width > 640 ? {
+                                    width: "50%", height: "4vw", fontFamily: "Inter, sans-serif", fontSize: "1.65vw", boxShadow: ".4vw .4vw 0 0vw #202430", border: ".3vw #202430 solid", borderRadius: ".5vw",
+                                    paddingLeft: ".8vw", fontWeight: "500", outlineWidth: "0vw", color: "#202430"
+                                }
+                                    :
+                                    {
+                                        width: "50%", height: "10vw", fontFamily: "Inter, sans-serif", fontSize: "3.7vw", boxShadow: "1.1vw 1.1vw 0 0vw #202430", border: "1vw #202430 solid", borderRadius: "2vw",
+                                        paddingLeft: "1vw", fontWeight: "500", outlineWidth: "0vw", color: "#202430"
+                                    }} placeholder='Confirm Password'></motion.input>
+                            </div>
+                            {!isChecking ? <motion.button whileTap={{ scale: 0.9 }} type="submit" className={styles.hover_cursor} style={windowSize.width > 640 ? {
+                                height: "4vw", width: "13vw", fontFamily: "Inter, sans-serif", backgroundColor: "#7895B2", border: ".3vw #202430 solid ",
+                                borderRadius: ".5vw", fontSize: "2vw", fontWeight: "700", color: "white", boxShadow: ".3vw .3vw 0 0vw #202430"
+                            }
+                                :
+                                {
+                                    height: "10vw", width: "40vw", fontFamily: "Inter, sans-serif", backgroundColor: "#7895B2", border: "1vw #202430 solid ",
+                                    borderRadius: "2vw", fontSize: "5.5vw", fontWeight: "700", color: "white", boxShadow: "1.1vw 1.1vw 0 0vw #202430"
+                                }}>Sign Up</motion.button> : <div style={windowSize.width > 640 ? { height: "4vw", width: "13vw", display: "flex", justifyContent: "center", alignItems: "center" }
+                                    :
+                                    { height: "10vw", width: "40vw", display: "flex", justifyContent: "center", alignItems: "center" }}><CircularProgress sx={{ color: "#202430" }} /></div>}
+                        </form>
+                    </div>
+                }
+            </div>
         </motion.div>
     )
 }

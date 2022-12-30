@@ -67,6 +67,8 @@ export default function Home() {
         const validateRes = await axios.get("https://chainlink.restapi.ca/api/validate", {
           withCredentials: true
         })
+        console.log("validate response:" )
+        console.log(validateRes)
         setIsAuthenticating(false)
         router.push("/admin")
       } catch (error) {

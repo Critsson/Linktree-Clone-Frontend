@@ -62,6 +62,11 @@ const ErrorAlert = (props: props) => {
             <AlertTitle><strong>Username already exists</strong></AlertTitle>
             Unfortunately the username you entered already exists. Please try again.
         </Alert></motion.div>
+    } else if (props.message === "Passwords do not match") {
+        errorAlertElement = <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} transition={{ duration: .2 }}><Alert sx={{ fontFamily: "Inter" }} onClose={() => setRendered(false)} severity='warning'>
+            <AlertTitle><strong>Passwords do not match</strong></AlertTitle>
+            The two passwords entered are not identical. Please try again.
+        </Alert></motion.div>
     } else {
         errorAlertElement = <></>
     }
