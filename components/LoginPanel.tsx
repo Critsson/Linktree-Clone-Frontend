@@ -70,13 +70,12 @@ const LoginPanel = (props: props) => {
 
         try {
             const postRes = await axios.post("https://chainlink.restapi.ca/api/login", {
-                username,
+                username: username.toLowerCase(),
                 password
             }, {
                 withCredentials: true,
             })
             setIsChecking(false)
-            console.log(postRes)
             router.push("/admin")
         } catch (error) {
             setIsChecking(false)

@@ -1,6 +1,7 @@
 import React from 'react'
 import useWindowSize from '../useWindowSize'
 import styles from "../styles/Extras.module.css"
+import { motion } from 'framer-motion'
 
 interface linkButtonProps {
     link: string,
@@ -22,8 +23,8 @@ const LinkButton = (props: linkButtonProps) => {
         fontWeight: "700",
         fontFamily: "Inter, sans-serif",
         borderRadius: "2vw",
-        borderWidth: ".7vw",
-        boxShadow: "2px 3px 0px 1px black"
+        borderWidth: "1vw",
+        boxShadow: "3.5px 4px 0px 1px black"
     }
 
     const buttonStyleDesktop = {
@@ -37,8 +38,8 @@ const LinkButton = (props: linkButtonProps) => {
         fontWeight: "700",
         fontFamily: "Inter, sans-serif",
         borderRadius: ".6vw",
-        borderWidth: ".2vw",
-        boxShadow: ".3vw .2vw 0 0vw black"
+        borderWidth: ".3vw",
+        boxShadow: ".4vw .3vw 0 0vw black"
     }
 
     const { link, title } = props
@@ -46,9 +47,9 @@ const LinkButton = (props: linkButtonProps) => {
 
     return (
         <a href={link} target="_blank" rel="noreferrer">
-            <button className={styles.hover_cursor} style={windowSize.width > 640 ? buttonStyleDesktop : buttonStyleMobile}>
+            <motion.button whileHover={{scale: 1.03}} className={styles.hover_cursor} style={windowSize.width > 640 ? buttonStyleDesktop : buttonStyleMobile}>
                 {title}
-            </button>
+            </motion.button>
         </a>
     )
 }

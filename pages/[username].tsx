@@ -8,14 +8,16 @@ import { CircularProgress, Avatar } from '@mui/material'
 import styles from '../styles/UserPage.module.css'
 import LinkButton from '../components/LinkButton'
 import useWindowSize from '../useWindowSize'
+import https from "https"
+import LinkIcon from '@mui/icons-material/Link';
+
+const fetchData = async (username: string | string[] | undefined) => {
+    if (typeof username === "string") {
+        return (await axios.get(`https://chainlink.restapi.ca/api/users/${username.toLowerCase()}`)).data
+    }
+}
 
 export default function UserPage({ userData }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-
-    const fetchData = async (username: string | string[] | undefined) => {
-        if (typeof username === "string") {
-            return (await axios.get(`https://chainlink.restapi.ca:5000/api/users/${username.toLowerCase()}`)).data
-        }
-    }
 
     const router = useRouter()
     const { username } = router.query
@@ -25,7 +27,7 @@ export default function UserPage({ userData }: InferGetServerSidePropsType<typeo
 
     const userPageContainerMobile = {
         display: "flex",
-        height: "100vh",
+        minHeight: "93vh",
         width: "100vw",
         alignItems: "center",
         flexDirection: "column" as "column",
@@ -37,7 +39,7 @@ export default function UserPage({ userData }: InferGetServerSidePropsType<typeo
 
     const userPageContainerDesktop = {
         display: "flex",
-        height: "100vh",
+        minHeight: "93vh",
         width: "100vw",
         alignItems: "center",
         flexDirection: "column" as "column",
@@ -61,20 +63,26 @@ export default function UserPage({ userData }: InferGetServerSidePropsType<typeo
     }) : []
 
     return (
-        <div style={windowSize.width > 640 ? userPageContainerDesktop : userPageContainerMobile}>
-            <Avatar sx={windowSize.width > 640 ?
-                { backgroundColor: `#${data.avatarbgcolor}`, fontFamily: "Inter, sans-serif", width: "5vw", height: "5vw", fontSize: "3vw", color: `#${data.avatarfontcolor}`, marginBottom: "-1vw" }
-                :
-                { backgroundColor: `#${data.avatarbgcolor}`, fontFamily: "Inter, sans-serif", width: "25vw", height: "25vw", fontSize: "16vw", color: `#${data.avatarfontcolor}`, marginBottom: "-2vw" }}>
-                {data.username[0].toUpperCase()}</Avatar>
-            <h1 style={windowSize.width > 640 ?
-                { fontSize: "1.5vw", color: `#${data.tagcolor}` }
-                :
-                { fontSize: "7vw", color: `#${data.tagcolor}` }}>{`@${data.username}`}</h1>
-            <div className={styles.user_page_button_container}>
-                {linkButtonElements}
+        <>
+            <div style={windowSize.width > 640 ? userPageContainerDesktop : userPageContainerMobile}>
+                <Avatar sx={windowSize.width > 640 ?
+                    { backgroundColor: `#${data.avatarbgcolor}`, fontFamily: "Inter, sans-serif", width: "5vw", height: "5vw", fontSize: "3vw", color: `#${data.avatarfontcolor}`, marginBottom: "-1vw" }
+                    :
+                    { backgroundColor: `#${data.avatarbgcolor}`, fontFamily: "Inter, sans-serif", width: "25vw", height: "25vw", fontSize: "16vw", color: `#${data.avatarfontcolor}`, marginBottom: "-2vw" }}>
+                    {data.username[0].toUpperCase()}</Avatar>
+                <h1 style={windowSize.width > 640 ?
+                    { fontSize: "1.5vw", color: `#${data.tagcolor}` }
+                    :
+                    { fontSize: "7vw", color: `#${data.tagcolor}` }}>{`@${data.username}`}</h1>
+                <div className={styles.user_page_button_container}>
+                    {linkButtonElements}
+                </div>
             </div>
-        </div>
+            <div style={windowSize.width > 640 ? { display: "flex", justifyContent: "center"} : { display: "flex", justifyContent: "center" }}>
+                <h1 style={windowSize.width > 640 ? { fontSize: "1.5vw", color: data.avatarbgcolor } : { fontSize: "5.5vw", color: data.avatarbgcolor }}>chainlink</h1>
+                <LinkIcon sx={windowSize.width > 640 ? { height: "2vw", width: "2vw", color: data.avatarbgcolor } : { height: "7.4vw", width: "7.4vw", color: data.avatarbgcolor }} />
+            </div>
+        </>
     )
 }
 
@@ -85,7 +93,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     let userData;
 
     if (typeof username === "string") {
-        userData = (await axios.get(`https://chainlink.restapi.ca/api/users/${username.toLowerCase()}`)).data
+        userData = (await axios.get(`https://chainlink.restapi.ca/api/users/${username.toLowerCase()}`, {
+            httpsAgent: new https.Agent({
+                rejectUnauthorized: false
+            })
+        })).data
     }
 
     return {
