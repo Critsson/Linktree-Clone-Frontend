@@ -58,8 +58,8 @@ export default function UserPage({ userData }: InferGetServerSidePropsType<typeo
         )
     }
 
-    const linkButtonElements = data.links ? data.links.map((linkObject: { link: string, title: string }) => {
-        return <LinkButton key={linkObject.link} link={linkObject.link} title={linkObject.title} buttonColor={data.buttoncolor} fontColor={data.fontcolor} />
+    const linkButtonElements = data.links ? data.links.map((linkObject: { link: string, title: string, id: number }) => {
+        return <LinkButton key={linkObject.id} link={linkObject.link} title={linkObject.title} buttonColor={data.buttoncolor} fontColor={data.fontcolor} />
     }) : []
 
     return (
@@ -78,7 +78,7 @@ export default function UserPage({ userData }: InferGetServerSidePropsType<typeo
                     {linkButtonElements}
                 </div>
             </div>
-            <div style={windowSize.width > 640 ? { display: "flex", justifyContent: "center"} : { display: "flex", justifyContent: "center" }}>
+            <div style={windowSize.width > 640 ? { display: "flex", justifyContent: "center", marginTop: "1vw", marginBottom: "1vw" } : { display: "flex", justifyContent: "center", marginTop: "5vw", marginBottom: "3vw" }}>
                 <h1 style={windowSize.width > 640 ? { fontSize: "1.5vw", color: data.avatarbgcolor } : { fontSize: "5.5vw", color: data.avatarbgcolor }}>chainlink</h1>
                 <LinkIcon sx={windowSize.width > 640 ? { height: "2vw", width: "2vw", color: data.avatarbgcolor } : { height: "7.4vw", width: "7.4vw", color: data.avatarbgcolor }} />
             </div>

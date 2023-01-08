@@ -46,7 +46,7 @@ const LinkButton = (props: linkButtonProps) => {
     const windowSize = useWindowSize();
 
     return (
-        <a href={link} target="_blank" rel="noreferrer">
+        <a href={`//${link}`} target="_blank" rel="noreferrer">
             <motion.button whileHover={{scale: 1.03}} className={styles.hover_cursor} style={windowSize.width > 640 ? buttonStyleDesktop : buttonStyleMobile}>
                 {title}
             </motion.button>

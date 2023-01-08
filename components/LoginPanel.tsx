@@ -70,7 +70,7 @@ const LoginPanel = (props: props) => {
 
         try {
             const postRes = await axios.post("https://chainlink.restapi.ca/api/login", {
-                username: username.toLowerCase(),
+                username,
                 password
             }, {
                 withCredentials: true,
