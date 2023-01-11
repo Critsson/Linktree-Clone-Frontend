@@ -28,7 +28,7 @@ export default function UserPage({ userData }: InferGetServerSidePropsType<typeo
     const userPageContainerMobile = {
         display: "flex",
         minHeight: "93vh",
-        width: "100vw",
+        maxWidth: "100vw",
         alignItems: "center",
         flexDirection: "column" as "column",
         fontFamily: "Inter, sans-serif",
@@ -40,7 +40,7 @@ export default function UserPage({ userData }: InferGetServerSidePropsType<typeo
     const userPageContainerDesktop = {
         display: "flex",
         minHeight: "93vh",
-        width: "100vw",
+        maxWidth: "100vw",
         alignItems: "center",
         flexDirection: "column" as "column",
         fontFamily: "Inter, sans-serif",

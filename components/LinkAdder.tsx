@@ -29,7 +29,7 @@ export const LinkAdder = (props: props) => {
 
     return (
         <motion.div initial={{ opacity: 0, y: "-2vw" }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: "-.5vw" }} style={{
-            backgroundColor: "white", width: "100%", height: "6.8vw", borderRadius: "1vw",
+            backgroundColor: "white", width: "33vw", height: "6.8vw", borderRadius: "1vw", paddingBottom: "1vw",
             marginTop: "1.5vw", boxShadow: ".5vw .4vw 0 0vw black", border: ".2vw solid black", paddingTop: ".1vw", display: "flex", flexDirection: "column", gap: ".1vw",
         }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingLeft: "1vw", paddingRight: ".5vw" }}>

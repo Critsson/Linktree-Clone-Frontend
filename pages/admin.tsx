@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { ReactElement, ReactHTMLElement } from 'react'
 import { useRouter } from 'next/router'
-import { CircularProgress } from "@mui/material"
+import { CircularProgress, IconButton, Tooltip } from "@mui/material"
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import useWindowSize from '../useWindowSize'
@@ -11,6 +11,9 @@ import styles from "../styles/Extras.module.css"
 import { LinkAdder } from '../components/LinkAdder'
 import { AnimatePresence } from 'framer-motion'
 import AdminLink from '../components/AdminLink'
+import KeyboardArrowRightRoundedIcon from '@mui/icons-material/KeyboardArrowRightRounded';
+import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
+import ColorMenu from '../components/ColorMenu'
 
 const fetchData = async () => {
   const getRes = await axios.get("https://chainlink.restapi.ca/api/admin", {
@@ -36,6 +39,7 @@ const AdminPage = () => {
   const [buttoncolor, setButtoncolor] = React.useState(``)
   const [links, setLinks] = React.useState<{ id: number, title: string, link: string }[]>([])
   const [linksId, setLinksId] = React.useState(1)
+  const [selectingColors, setSelectingColors] = React.useState(false)
   const windowSize = useWindowSize()
 
   React.useEffect(() => {
@@ -79,7 +83,7 @@ const AdminPage = () => {
     router.push("/")
   }
 
-  const handleDeletion = async () => {
+  const handleUserDeletion = async () => {
     await axios.delete("https://chainlink.restapi.ca/api/users", {
       withCredentials: true
     })
@@ -125,7 +129,73 @@ const AdminPage = () => {
     setLinks(placeholder)
     handlePreviewRefresh()
     setIsAddingLink(false)
-    setAddedLink({link: "", title: ""})
+    setAddedLink({ link: "", title: "" })
+    refetch()
+  }
+
+  const handleLinkDeletion = async (id: number) => {
+
+    const filteredLinks = links.filter(link => link.id !== id)
+
+    try {
+      const res = await axios.put("https://chainlink.restapi.ca/api/users/links", {
+        links: filteredLinks
+      }, {
+        withCredentials: true
+      })
+    } catch (err) {
+      console.error(err)
+    }
+
+    setLinks(filteredLinks)
+    handlePreviewRefresh()
+    refetch()
+  }
+
+  const handleLinkChange = async (id: number, newLink: string, e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const placeholder = links.map((link) => {
+      if (link.id === id) {
+        return { id: link.id, link: newLink, title: link.title }
+      } else {
+        return { id: link.id, link: link.link, title: link.title }
+      }
+    })
+
+    try {
+      const res = await axios.put("https://chainlink.restapi.ca/api/users/links", {
+        links: placeholder
+      }, {
+        withCredentials: true
+      })
+    } catch (err) {
+      console.error(err)
+    }
+    setLinks(placeholder)
+    refetch()
+  }
+
+  const handleTitleChange = async (id: number, newTitle: string, e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const placeholder = links.map((link) => {
+      if (link.id === id) {
+        return { id: link.id, link: link.link, title: newTitle }
+      } else {
+        return { id: link.id, link: link.link, title: link.title }
+      }
+    })
+
+    try {
+      const res = await axios.put("https://chainlink.restapi.ca/api/users/links", {
+        links: placeholder
+      }, {
+        withCredentials: true
+      })
+    } catch (err) {
+      console.error(err)
+    }
+    setLinks(placeholder)
+    handlePreviewRefresh()
     refetch()
   }
 
@@ -135,33 +205,49 @@ const AdminPage = () => {
     </div>
   }
 
+  const adminLinkElements = links.map((link) => {
+    return <AdminLink id={link.id} key={link.id} title={link.title} link={link.link} handleLinkDeletion={handleLinkDeletion} handleTitleChange={handleTitleChange}
+      handleLinkChange={handleLinkChange} />
+  })
+
   console.log(linksId)
 
   return (
     <div style={{ display: "flex", width: "100vw", height: "100vh", backgroundColor: "#F3F3F1", flexDirection: "column" }}>
       <div style={{ display: "flex", alignItems: "center" }}>
         <div style={windowSize.width > 640 ? {
-          width: "68vw", height: "100vh", borderRight: ".1vw solid lightgrey", boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px", overflow: "scroll", flexDirection: 'column'
-          , display: "flex", alignItems: "center", paddingTop: "9vw"
+          width: "72vw", height: "100vh", borderRight: ".1vw solid lightgrey", boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px", overflow: "scroll", flexDirection: 'column'
+          , display: "flex", alignItems: "center", paddingTop: "9vw", paddingBottom: "3vw"
         } : {
           width: "100vw", height: "100vh", overflowY: "scroll", flexDirection: 'column', display: "flex", alignItems: "center", paddingTop: "9vw"
         }}>
-          <div style={{
-            display: "flex", justifyContent: "center", width: "33vw", height: "2.5vw", borderRadius: "1vw",
-            boxShadow: ".3vw .3vw 0 0vw black", border: ".2vw solid black", alignItems: "center", gap: ".3vw"
-          }} className={styles.add_link_button} onClick={() => setIsAddingLink(true)}>
-            <AddLinkIcon sx={{ color: "white", width: "1.9vw", height: "1.9vw" }} />
-            <h3 style={{ color: "white", fontSize: "1vw" }}>Add link</h3>
-          </div>
-          <AnimatePresence>
-            {isAddingLink && <LinkAdder closeLinkAdder={closeLinkAdder} addedLink={addedLink} updateAddedLink={updateAddedLink} handleLinkAdderSubmit={handleLinkAdderSubmit} />}
-          </AnimatePresence>
-          <div style={{display: "flex", alignItems: "center", flexDirection: "column", marginTop: "1.5vw", gap: "1.5vw", width: "33vw"}}>
-              <AdminLink id={links[0].id} title={links[0].title} link={links[0].link} />
-              <AdminLink id={links[1].id} title={links[1].title} link={links[1].link} />
+          <div style={{ display: "flex", width: "100%", justifyContent: "center" }}>
+            <div style={{ display: "flex", flexDirection: "column", marginLeft: "3.7vw", alignItems: "center" }}>
+              <div style={{
+                display: "flex", justifyContent: "center", width: "33vw", minHeight: "2.5vw", borderRadius: "1vw",
+                boxShadow: ".3vw .3vw 0 0vw black", border: ".2vw solid black", alignItems: "center", gap: ".3vw"
+              }} className={styles.add_link_button} onClick={() => setIsAddingLink(true)}>
+                <AddLinkIcon sx={{ color: "white", width: "1.9vw", height: "1.9vw" }} />
+                <h3 style={{ color: "white", fontSize: "1vw" }}>Add link</h3>
+              </div>
+              <AnimatePresence>
+                {isAddingLink && <LinkAdder closeLinkAdder={closeLinkAdder} addedLink={addedLink} updateAddedLink={updateAddedLink} handleLinkAdderSubmit={handleLinkAdderSubmit} />}
+              </AnimatePresence>
+              <div style={{ display: "flex", alignItems: "center", flexDirection: "column", marginTop: "1.5vw", gap: "1.5vw", width: "33vw" }}>
+                {adminLinkElements}
+              </div>
+            </div>
+            {selectingColors ? <IconButton onClick={() => setSelectingColors(false)} disableRipple>
+              <KeyboardArrowLeftRoundedIcon sx={{ height: "3.7vw", width: "3.7vw", color: "grey" }} />
+            </IconButton>
+              :
+              <IconButton onClick={() => setSelectingColors(true)} disableRipple>
+                <KeyboardArrowRightRoundedIcon sx={{ height: "3.7vw", width: "3.7vw", color: "grey" }} />
+              </IconButton>}
+              {selectingColors && <ColorMenu />}
           </div>
         </div>
-        {windowSize.width > 640 && <div style={{ width: "32vw", height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        {windowSize.width > 640 && <div style={{ width: "28vw", height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <AdminPreview bgcolor={data.bgcolor} isIframeRefreshing={isIframeRefreshing} iframeUpdateCount={iframeUpdateCount} username={data.username} />
         </div>}
       </div>

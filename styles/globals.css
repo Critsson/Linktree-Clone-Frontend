@@ -16,3 +16,12 @@ div {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+iframe::-webkit-scrollbar {
+  display: none;
+}
+
+iframe {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
