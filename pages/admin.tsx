@@ -11,8 +11,6 @@ import styles from "../styles/Extras.module.css"
 import { LinkAdder } from '../components/LinkAdder'
 import { AnimatePresence } from 'framer-motion'
 import AdminLink from '../components/AdminLink'
-import KeyboardArrowRightRoundedIcon from '@mui/icons-material/KeyboardArrowRightRounded';
-import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
 import ColorMenu from '../components/ColorMenu'
 
 const fetchData = async () => {
@@ -39,7 +37,6 @@ const AdminPage = () => {
   const [buttoncolor, setButtoncolor] = React.useState(``)
   const [links, setLinks] = React.useState<{ id: number, title: string, link: string }[]>([])
   const [linksId, setLinksId] = React.useState(1)
-  const [selectingColors, setSelectingColors] = React.useState(false)
   const windowSize = useWindowSize()
 
   React.useEffect(() => {
@@ -217,12 +214,14 @@ const AdminPage = () => {
       <div style={{ display: "flex", alignItems: "center" }}>
         <div style={windowSize.width > 640 ? {
           width: "72vw", height: "100vh", borderRight: ".1vw solid lightgrey", boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px", overflow: "scroll", flexDirection: 'column'
-          , display: "flex", alignItems: "center", paddingTop: "9vw", paddingBottom: "3vw"
+          , display: "flex", alignItems: "center", paddingBottom: "3vw"
         } : {
           width: "100vw", height: "100vh", overflowY: "scroll", flexDirection: 'column', display: "flex", alignItems: "center", paddingTop: "9vw"
         }}>
+          <ColorMenu bgcolor={bgcolor} fontcolor={fontcolor} buttoncolor={buttoncolor} avatarbgcolor={avatarbgcolor} avatarfontcolor={avatarfontcolor}
+            tagcolor={tagcolor} />
           <div style={{ display: "flex", width: "100%", justifyContent: "center" }}>
-            <div style={{ display: "flex", flexDirection: "column", marginLeft: "3.7vw", alignItems: "center" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
               <div style={{
                 display: "flex", justifyContent: "center", width: "33vw", minHeight: "2.5vw", borderRadius: "1vw",
                 boxShadow: ".3vw .3vw 0 0vw black", border: ".2vw solid black", alignItems: "center", gap: ".3vw"
@@ -237,14 +236,13 @@ const AdminPage = () => {
                 {adminLinkElements}
               </div>
             </div>
-            {selectingColors ? <IconButton onClick={() => setSelectingColors(false)} disableRipple>
+            {/* {selectingColors ? <IconButton onClick={() => setSelectingColors(false)} disableRipple>
               <KeyboardArrowLeftRoundedIcon sx={{ height: "3.7vw", width: "3.7vw", color: "grey" }} />
             </IconButton>
               :
               <IconButton onClick={() => setSelectingColors(true)} disableRipple>
                 <KeyboardArrowRightRoundedIcon sx={{ height: "3.7vw", width: "3.7vw", color: "grey" }} />
-              </IconButton>}
-              {selectingColors && <ColorMenu />}
+              </IconButton>} */}
           </div>
         </div>
         {windowSize.width > 640 && <div style={{ width: "28vw", height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
