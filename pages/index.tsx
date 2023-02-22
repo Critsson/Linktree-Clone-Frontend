@@ -110,7 +110,9 @@ export default function Home() {
         position: "absolute", height: "100vh", width: "100vw", top: "0", backgroundColor: "rgba(0, 0, 0, 0.87)", display: "flex", alignItems: "center",
         justifyContent: "center"
       }} onClick={() => setInModal(false)}>
-        <WipModal closeModal={closeModal} />
+        {
+            windowSize.width > 640 && <WipModal closeModal={closeModal} />
+        }
       </div>}
     </>
   )
