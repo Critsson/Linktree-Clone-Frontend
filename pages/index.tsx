@@ -80,7 +80,7 @@ export default function Home() {
   }, [router])
 
   const closeModal = () => {
-      setInModal(false)
+    setInModal(false)
   }
 
   if (isAuthenticating) {
@@ -106,14 +106,14 @@ export default function Home() {
           {inSignup === true && <SignUpHelper windowWidth={windowSize.width} usernameNotValid={usernameNotValid} passwordNotValid={passwordNotValid} />}
         </AnimatePresence>
       </div>
-      {inModal && <div style={{
-        position: "absolute", height: "100vh", width: "100vw", top: "0", backgroundColor: "rgba(0, 0, 0, 0.87)", display: "flex", alignItems: "center",
-        justifyContent: "center"
-      }} onClick={() => setInModal(false)}>
-        {
-            windowSize.width > 640 && <WipModal closeModal={closeModal} />
-        }
-      </div>}
+      {
+        windowSize.width > 640 && (inModal && <div style={{
+          position: "absolute", height: "100vh", width: "100vw", top: "0", backgroundColor: "rgba(0, 0, 0, 0.87)", display: "flex", alignItems: "center",
+          justifyContent: "center"
+        }} onClick={() => setInModal(false)}>
+          <WipModal closeModal={closeModal} />
+        </div>)
+      }
     </>
   )
 }
